@@ -6,21 +6,21 @@ settings:
 
 dependencies:
   fastify:
-    specifier: ^4.23.2
+    specifier: 4.23.2
     version: 4.23.2
 
 devDependencies:
   '@types/node':
-    specifier: ^20.7.2
+    specifier: 20.7.2
     version: 20.7.2
   tsup:
-    specifier: ^7.2.0
+    specifier: 7.2.0
     version: 7.2.0(typescript@5.2.2)
   tsx:
-    specifier: ^3.13.0
+    specifier: 3.13.0
     version: 3.13.0
   typescript:
-    specifier: ^5.2.2
+    specifier: 5.2.2
     version: 5.2.2
 
 packages:
