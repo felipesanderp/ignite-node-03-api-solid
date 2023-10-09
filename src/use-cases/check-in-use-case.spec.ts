@@ -1,14 +1,27 @@
 import { expect, describe, it, beforeEach, vi, afterEach } from 'vitest'
 import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-check-ins-repository'
 import { CheckInUseCase } from './check-in-use-case'
+import { InMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository'
+import { Decimal } from '@prisma/client/runtime/library'
 
 let checkInsRepository: InMemoryCheckInsRepository
+let gymsRepository: InMemoryGymsRepository
 let sut: CheckInUseCase
 
 describe('Check In Use Case', async () => {
   beforeEach(() => {
     checkInsRepository = new InMemoryCheckInsRepository()
-    sut = new CheckInUseCase(checkInsRepository)
+    gymsRepository = new InMemoryGymsRepository()
+    sut = new CheckInUseCase(checkInsRepository, gymsRepository)
+
+    gymsRepository.gyms.push({
+      id: 'gym-1',
+      title: 'Academia 01',
+      description: '',
+      phone: '',
+      latitude: new Decimal(-25.3727822),
+      longitude: new Decimal(-49.0839456),
+    })
 
     vi.useFakeTimers()
   })
@@ -21,6 +34,8 @@ describe('Check In Use Case', async () => {
     const { checkIn } = await sut.execute({
       userId: 'user-1',
       gymId: 'gym-1',
+      userLatitude: -25.3727822,
+      userLongitude: -49.0839456,
     })
 
     expect(checkIn.id).toEqual(expect.any(String))
@@ -32,12 +47,16 @@ describe('Check In Use Case', async () => {
     await sut.execute({
       userId: 'user-1',
       gymId: 'gym-1',
+      userLatitude: -25.3727822,
+      userLongitude: -49.0839456,
     })
 
     await expect(() =>
       sut.execute({
         userId: 'user-1',
         gymId: 'gym-1',
+        userLatitude: -25.3727822,
+        userLongitude: -49.0839456,
       }),
     ).rejects.toBeInstanceOf(Error)
   })
@@ -48,6 +67,8 @@ describe('Check In Use Case', async () => {
     await sut.execute({
       userId: 'user-1',
       gymId: 'gym-1',
+      userLatitude: -25.3727822,
+      userLongitude: -49.0839456,
     })
 
     vi.setSystemTime(new Date(2022, 0, 21, 8, 0, 0))
@@ -55,8 +76,31 @@ describe('Check In Use Case', async () => {
     const { checkIn } = await sut.execute({
       userId: 'user-1',
       gymId: 'gym-1',
+      userLatitude: -25.3727822,
+      userLongitude: -49.0839456,
     })
 
     expect(checkIn.id).toEqual(expect.any(String))
+  })
+
+  // -25.3697697,-49.0748655
+  it('should not be able to check in on distant gym', async () => {
+    gymsRepository.gyms.push({
+      id: 'gym-2',
+      title: 'Academia 02',
+      description: '',
+      phone: '',
+      latitude: new Decimal(-27.0747279),
+      longitude: new Decimal(-49.489672),
+    })
+
+    await expect(() =>
+      sut.execute({
+        userId: 'user-1',
+        gymId: 'gym-1',
+        userLatitude: -27.2092052,
+        userLongitude: -49.6401091,
+      }),
+    ).rejects.toBeInstanceOf(Error)
   })
 })
