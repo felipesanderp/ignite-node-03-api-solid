@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify'
 import { verifyJWT } from '@/http/middlewares/verify-jwt'
 
 import { search } from './search.controller'
-import { fetchNearby } from './nearby'
+import { fetchNearby } from './nearby.controller'
 import { create } from './create.controller'
 
 export async function gymsRoutes(app: FastifyInstance) {
