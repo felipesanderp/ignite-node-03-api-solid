@@ -16,7 +16,9 @@ export async function fetchNearby(
     }),
   })
 
-  const { latitude, longitude } = fetchNearbyGymsQuerySchema.parse(request.body)
+  const { latitude, longitude } = fetchNearbyGymsQuerySchema.parse(
+    request.query,
+  )
 
   const fetchNearbyGymsUseCase = makeFetchNearbyGymsUseCase()
 
