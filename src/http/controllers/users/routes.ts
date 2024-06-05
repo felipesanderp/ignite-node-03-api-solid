@@ -40,7 +40,7 @@ export async function userRoutes(app: FastifyInstance) {
           password: z.string(),
         }),
         response: {
-          201: z.object({
+          200: z.object({
             token: z.string(),
           }),
         },
@@ -49,7 +49,21 @@ export async function userRoutes(app: FastifyInstance) {
     authenticate,
   )
 
-  app.patch('/token/refresh', refresh)
+  app.patch(
+    '/token/refresh',
+    {
+      schema: {
+        tags: ['Auth'],
+        summary: 'Refresh token',
+        response: {
+          200: z.object({
+            token: z.string(),
+          }),
+        },
+      },
+    },
+    refresh,
+  )
 
   app.withTypeProvider<ZodTypeProvider>().get(
     '/me',
