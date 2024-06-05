@@ -10,7 +10,25 @@ import { profile } from './profile.controller'
 import { refresh } from './refresh.controller'
 
 export async function userRoutes(app: FastifyInstance) {
-  app.post('/users', register)
+  app.withTypeProvider<ZodTypeProvider>().post(
+    '/users',
+    {
+      schema: {
+        tags: ['Auth'],
+        summary: 'Create Account',
+        body: z.object({
+          name: z.string(),
+          email: z.string().email(),
+          password: z.string().min(6),
+        }),
+        response: {
+          201: z.null(),
+        },
+      },
+    },
+    register,
+  )
+
   app.withTypeProvider<ZodTypeProvider>().post(
     '/sessions',
     {
