@@ -2,13 +2,25 @@ import fastify from 'fastify'
 import fastifyJwt from '@fastify/jwt'
 import fastifyCookie from '@fastify/cookie'
 import { ZodError } from 'zod'
+import fastifySwagger from '@fastify/swagger'
+import fastifySwaggerUI from '@fastify/swagger-ui'
+
+import {
+  jsonSchemaTransform,
+  serializerCompiler,
+  validatorCompiler,
+  ZodTypeProvider,
+} from 'fastify-type-provider-zod'
 
 import { userRoutes } from './http/controllers/users/routes'
 import { gymsRoutes } from './http/controllers/gyms/routes'
 import { env } from './env'
 import { checkInsRoutes } from './http/controllers/check-ins/routes'
 
-export const app = fastify()
+export const app = fastify().withTypeProvider<ZodTypeProvider>()
+
+app.setSerializerCompiler(serializerCompiler)
+app.setValidatorCompiler(validatorCompiler)
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
@@ -22,6 +34,30 @@ app.register(fastifyJwt, {
 })
 
 app.register(fastifyCookie)
+
+app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: 'Next.js SaaS',
+      description: 'Full-stack SaaS app with multi-tenant & RBAC.',
+      version: '1.0.0',
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+  },
+  transform: jsonSchemaTransform,
+})
+
+app.register(fastifySwaggerUI, {
+  routePrefix: '/docs',
+})
 
 app.register(userRoutes)
 app.register(gymsRoutes)
