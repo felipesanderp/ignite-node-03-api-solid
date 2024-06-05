@@ -49,5 +49,8 @@
     "fastify": "4.23.2",
     "fastify-type-provider-zod": "1.2.0",
     "zod": "3.22.2"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

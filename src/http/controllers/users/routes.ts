@@ -11,7 +11,25 @@ import { refresh } from './refresh.controller'
 
 export async function userRoutes(app: FastifyInstance) {
   app.post('/users', register)
-  app.post('/sessions', authenticate)
+  app.withTypeProvider<ZodTypeProvider>().post(
+    '/sessions',
+    {
+      schema: {
+        tags: ['Auth'],
+        summary: 'Authenticate with e-mail & password',
+        body: z.object({
+          email: z.string().email(),
+          password: z.string(),
+        }),
+        response: {
+          201: z.object({
+            token: z.string(),
+          }),
+        },
+      },
+    },
+    authenticate,
+  )
 
   app.patch('/token/refresh', refresh)
 
@@ -22,6 +40,7 @@ export async function userRoutes(app: FastifyInstance) {
       schema: {
         tags: ['User'],
         summary: 'Get personal profile',
+        security: [{ bearerAuth: [] }],
         response: {
           200: z.object({
             user: z.object({
