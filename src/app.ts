@@ -38,8 +38,8 @@ app.register(fastifyCookie)
 app.register(fastifySwagger, {
   openapi: {
     info: {
-      title: 'Next.js SaaS',
-      description: 'Full-stack SaaS app with multi-tenant & RBAC.',
+      title: 'GymPass style App',
+      description: 'API built in with Fastify that copy GymPass app',
       version: '1.0.0',
     },
     components: {
